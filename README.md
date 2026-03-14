@@ -1,0 +1,2 @@
+# Fairodds
+Calculator Fair Odds
