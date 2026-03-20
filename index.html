@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facoltà di Medicina — Diario di Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@300;400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0d0e12;
+  --surface:   #13151c;
+  --card:      #191c26;
+  --border:    #252836;
+  --accent:    #b8975a;
+  --accent2:   #7fa89e;
+  --text:      #d4cfc6;
+  --muted:     #6b6a72;
+  --done-text: #7ecfa0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+background: var(–surface);
+border-bottom: 1px solid var(–border);
+padding: 1.6rem 2rem;
+position: sticky;
+top: 0;
+z-index: 100;
+display: flex;
+align-items: center;
+gap: 1.5rem;
+flex-wrap: wrap;
+}
+.header-title { flex: 1; min-width: 180px; }
+.header-title h1 {
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 1.3rem;
+letter-spacing: 0.04em;
+text-transform: uppercase;
+color: var(–accent);
+}
+.header-title p {
+font-style: italic;
+color: var(–muted);
+font-size: 0.88rem;
+}
+.progress-wrap { display: flex; align-items: center; gap: 0.8rem; }
+.progress-bar-outer {
+width: 150px; height: 5px;
+background: var(–border); border-radius: 99px; overflow: hidden;
+}
+.progress-bar-inner {
+height: 100%;
+background: linear-gradient(90deg, var(–accent), var(–accent2));
+border-radius: 99px;
+transition: width 0.4s ease;
+width: 0%;
+}
+.progress-label {
+font-family: ‘DM Mono’, monospace;
+font-size: 0.72rem;
+color: var(–muted);
+white-space: nowrap;
+}
+.btn-export {
+background: transparent;
+border: 1px solid var(–border);
+color: var(–muted);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.7rem;
+padding: 0.35rem 0.8rem;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.btn-export:hover { border-color: var(–accent); color: var(–accent); }
+
+/* MAIN */
+main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 6rem; }
+
+/* MODULE */
+.module {
+margin-bottom: 1.4rem;
+border: 1px solid var(–border);
+border-radius: 10px;
+overflow: hidden;
+background: var(–surface);
+}
+.module-header {
+display: flex;
+align-items: flex-start;
+gap: 1rem;
+padding: 1rem 1.3rem;
+cursor: pointer;
+user-select: none;
+transition: background 0.15s;
+}
+.module-header:hover { background: var(–card); }
+.module-num {
+font-family: ‘DM Mono’, monospace;
+font-size: 0.65rem;
+color: var(–accent);
+background: rgba(184,151,90,0.1);
+border: 1px solid rgba(184,151,90,0.25);
+border-radius: 4px;
+padding: 0.2rem 0.45rem;
+flex-shrink: 0;
+margin-top: 0.2rem;
+letter-spacing: 0.05em;
+}
+.module-title-wrap {
+flex: 1;
+}
+.module-title {
+font-family: ‘Syne’, sans-serif;
+font-weight: 600;
+font-size: 0.98rem;
+color: #e8e4dc;
+display: block;
+}
+.module-subtitle {
+font-family: ‘EB Garamond’, serif;
+font-style: italic;
+font-size: 0.87rem;
+color: var(–muted);
+display: block;
+margin-top: 0.05rem;
+}
+.module-meta {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+flex-shrink: 0;
+margin-top: 0.2rem;
+}
+.module-count {
+font-family: ‘DM Mono’, monospace;
+font-size: 0.65rem;
+color: var(–muted);
+}
+.module-chevron {
+font-size: 0.6rem;
+color: var(–muted);
+transition: transform 0.25s;
+}
+.module.open .module-chevron { transform: rotate(180deg); }
+.module-body { display: none; border-top: 1px solid var(–border); }
+.module.open .module-body { display: block; }
+
+/* LESSON */
+.lesson { border-bottom: 1px solid var(–border); }
+.lesson:last-child { border-bottom: none; }
+.lesson-header {
+display: flex;
+align-items: center;
+gap: 0.8rem;
+padding: 0.6rem 1.3rem;
+cursor: pointer;
+transition: background 0.15s;
+}
+.lesson-header:hover { background: var(–card); }
+.lesson-num {
+font-family: ‘DM Mono’, monospace;
+font-size: 0.65rem;
+color: var(–muted);
+flex-shrink: 0;
+width: 2.2rem;
+}
+.lesson-title {
+flex: 1;
+font-size: 0.93rem;
+color: var(–text);
+}
+.lesson.completed .lesson-title { color: var(–done-text); }
+.lesson-status {
+font-size: 0.65rem;
+padding: 0.1rem 0.4rem;
+border-radius: 99px;
+font-family: ‘DM Mono’, monospace;
+flex-shrink: 0;
+}
+.lesson.completed .lesson-status {
+background: rgba(58,92,72,0.4);
+color: var(–done-text);
+border: 1px solid rgba(126,207,160,0.2);
+}
+.lesson:not(.completed) .lesson-status { visibility: hidden; }
+.lesson-chevron {
+font-size: 0.6rem;
+color: var(–muted);
+transition: transform 0.2s;
+flex-shrink: 0;
+}
+.lesson.open .lesson-chevron { transform: rotate(180deg); }
+.lesson-body {
+display: none;
+padding: 1rem 1.3rem 1.3rem 3.5rem;
+background: var(–card);
+}
+.lesson.open .lesson-body { display: block; }
+.field-gap { margin-bottom: 1rem; }
+.lesson-body label {
+display: block;
+font-family: ‘Syne’, sans-serif;
+font-size: 0.65rem;
+font-weight: 600;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 0.3rem;
+}
+.label-notes { color: rgba(127,168,158,0.7) !important; }
+.lesson-body textarea {
+width: 100%;
+background: var(–bg);
+border: 1px solid var(–border);
+border-radius: 6px;
+color: var(–text);
+font-family: ‘EB Garamond’, serif;
+font-size: 1rem;
+line-height: 1.65;
+padding: 0.75rem 0.9rem;
+resize: vertical;
+min-height: 120px;
+transition: border-color 0.2s;
+outline: none;
+}
+.lesson-body textarea:focus { border-color: var(–accent); }
+.notes-area {
+min-height: 80px !important;
+border-color: rgba(127,168,158,0.2) !important;
+font-style: italic;
+color: #a8c5be !important;
+}
+.notes-area:focus { border-color: var(–accent2) !important; }
+.lesson-actions { display: flex; gap: 0.6rem; margin-top: 0.75rem; align-items: center; }
+.btn-save {
+background: var(–accent);
+color: #0d0e12;
+border: none;
+font-family: ‘Syne’, sans-serif;
+font-weight: 700;
+font-size: 0.7rem;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+padding: 0.4rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+.btn-save:hover { opacity: 0.85; }
+.btn-done {
+background: transparent;
+color: var(–done-text);
+border: 1px solid rgba(126,207,160,0.3);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.68rem;
+padding: 0.35rem 0.85rem;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.btn-done:hover { background: rgba(58,92,72,0.3); }
+.save-feedback {
+font-family: ‘DM Mono’, monospace;
+font-size: 0.68rem;
+color: var(–accent2);
+opacity: 0;
+transition: opacity 0.3s;
+}
+.save-feedback.show { opacity: 1; }
+
+footer {
+text-align: center;
+padding: 2rem;
+font-family: ‘DM Mono’, monospace;
+font-size: 0.65rem;
+color: var(–muted);
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <h1>Facoltà di Medicina</h1>
+    <p>Diario di studio personale — 10 moduli, 100 lezioni</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+    <span class="progress-label" id="progressLabel">0 / 100</span>
+  </div>
+  <button class="btn-export" onclick="exportData()">Esporta JSON</button>
+</header>
+
+<main id="app"></main>
+
+<footer>Dati salvati nel browser (localStorage) · esportabili in JSON in qualsiasi momento</footer>
+
+<script>
+const CURRICULUM = [
+  {
+    num: 1,
+    title: "Il linguaggio segreto della vita",
+    subtitle: "Le basi — chimica, fisica, biologia",
+    lessons: [
+      "Di cosa sei fatto, esattamente?",
+      "L'atomo della vita: carbonio, ossigeno, idrogeno e gli altri",
+      "Le molecole: quando gli atomi si mettono insieme",
+      "L'acqua: il liquido che ha inventato la vita",
+      "Le proteine: gli operai dell'organismo",
+      "Il DNA: il manuale di istruzioni",
+      "La cellula: la città più piccola del mondo",
+      "Come le cellule comunicano tra loro"
+    ]
+  },
+  {
+    num: 2,
+    title: "La macchina umana",
+    subtitle: "Anatomia — come siamo fatti",
+    lessons: [
+      "Il corpo visto dall'esterno: pelle, ossa e postura",
+      "Lo scheletro: l'architettura portante",
+      "I muscoli: motori e leve",
+      "Il cuore: una pompa instancabile",
+      "I polmoni: l'officina dell'aria",
+      "Il cervello: il centro di controllo",
+      "Il tubo digerente: dalla bocca all'uscita",
+      "I reni: il sistema di filtraggio",
+      "Il sistema endocrino: le ghiandole che comandano",
+      "Il sistema immunitario: l'esercito invisibile"
+    ]
+  },
+  {
+    num: 3,
+    title: "Tutto in movimento",
+    subtitle: "Fisiologia — come funzioniamo",
+    lessons: [
+      "Come batte il cuore (davvero)",
+      "La circolazione: autostrade e stradine del sangue",
+      "Respirare: più complicato di quanto pensi",
+      "Mangiare e digerire: il viaggio del cibo",
+      "Il neurone che si accende",
+      "Come vediamo, sentiamo, tocchiamo",
+      "Gli ormoni: messaggi a lunga distanza",
+      "I reni e l'equilibrio dei liquidi",
+      "Il sistema immunitario in azione",
+      "Dormire, stressarsi, innamorarsi: la fisiologia delle emozioni"
+    ]
+  },
+  {
+    num: 4,
+    title: "La cucina delle cellule",
+    subtitle: "Biochimica — cosa succede dentro ogni cellula",
+    lessons: [
+      "L'energia della vita: ATP, la moneta universale",
+      "La glicolisi: bruciare zucchero",
+      "Il ciclo di Krebs: il motore centrale",
+      "I grassi come carburante",
+      "Le proteine si costruiscono e si distruggono",
+      "Il DNA si replica (e a volte sbaglia)",
+      "Come una cellula decide cosa fare",
+      "La morte cellulare: apoptosi, la morte programmata"
+    ]
+  },
+  {
+    num: 5,
+    title: "Quando qualcosa si rompe",
+    subtitle: "Patologia generale — le leggi del danno",
+    lessons: [
+      "Cos'è la malattia?",
+      "L'infiammazione: il fuoco che guarisce (o brucia)",
+      "La febbre: un'arma, non un nemico",
+      "Come guarisce una ferita",
+      "I virus: ospiti indesiderati",
+      "I batteri: amici, nemici e neutrali",
+      "Il cancro: quando la cellula impazzisce",
+      "Le malattie autoimmuni: quando il corpo si attacca da solo",
+      "Le malattie genetiche: errori nel codice",
+      "Invecchiare: la biologia del tempo che passa"
+    ]
+  },
+  {
+    num: 6,
+    title: "Dentro i sistemi",
+    subtitle: "Anatomia e fisiologia avanzate — ogni organo in profondità",
+    lessons: [
+      "Il cuore in dettaglio: anatomia e ciclo cardiaco",
+      "I vasi sanguigni: arterie, vene, capillari",
+      "Il sangue: molto più che acqua rossa",
+      "I polmoni in dettaglio: alveoli e scambi gassosi",
+      "Il cervello in dettaglio: lobi, corteccia, aree funzionali",
+      "Il midollo spinale e i nervi periferici",
+      "Stomaco e intestino tenue: la digestione da vicino",
+      "Il fegato: la fabbrica dell'organismo",
+      "Il pancreas: doppio ruolo, un solo organo",
+      "I reni in dettaglio: nefroni e filtrazione",
+      "Ossa e articolazioni: ingegneria in movimento",
+      "La pelle: molto più di un involucro",
+      "Gli organi di senso: occhi e orecchie",
+      "Il sistema riproduttivo"
+    ]
+  },
+  {
+    num: 7,
+    title: "Le malattie hanno una storia",
+    subtitle: "Patologia speciale — le grandi malattie organo per organo",
+    lessons: [
+      "Le malattie del cuore: infarto e scompenso cardiaco",
+      "L'ipertensione: il killer silenzioso",
+      "L'ictus: il cervello senz'acqua",
+      "Polmonite e malattie respiratorie",
+      "Il diabete: zucchero fuori controllo",
+      "Le malattie del fegato: epatiti e cirrosi",
+      "I tumori più comuni",
+      "Le malattie reumatologiche: articolazioni in rivolta",
+      "Parkinson e Alzheimer: il cervello che cambia",
+      "Le malattie infettive storiche",
+      "Le malattie della tiroide",
+      "Intestino: Crohn, colite e colon irritabile"
+    ]
+  },
+  {
+    num: 8,
+    title: "Il medico incontra il paziente",
+    subtitle: "Semeiotica e diagnostica — leggere un corpo malato",
+    lessons: [
+      "L'anamnesi: l'arte di ascoltare",
+      "L'esame obiettivo: vedere, toccare, percuotere, ascoltare",
+      "I segni vitali: i primi numeri del paziente",
+      "Il laboratorio: cosa ci dicono gli esami del sangue",
+      "Le immagini: radiografia, ecografia, TAC, risonanza",
+      "L'elettrocardiogramma: leggere il cuore su carta",
+      "La diagnosi differenziale: ragionare come un medico",
+      "La cartella clinica e il ragionamento clinico"
+    ]
+  },
+  {
+    num: 9,
+    title: "L'arsenale del medico",
+    subtitle: "Farmacologia e principi di chirurgia — come si cura",
+    lessons: [
+      "Come funziona un farmaco",
+      "Gli antibiotici: storia e meccanismo",
+      "I farmaci per il cuore",
+      "Antidolorifici e antinfiammatori",
+      "I farmaci del sistema nervoso",
+      "La chemioterapia e i nuovi farmaci oncologici",
+      "Il vaccino: addestrare l'esercito",
+      "Principi di chirurgia: quando il bisturi è la cura",
+      "L'anestesia: il confine tra sonno e morte",
+      "La riabilitazione: guarire dopo la cura"
+    ]
+  },
+  {
+    num: 10,
+    title: "Medicina nel mondo",
+    subtitle: "Specialità, sanità pubblica, etica e futuro",
+    lessons: [
+      "Le specialità mediche: un tour guidato",
+      "La medicina d'urgenza: pronto soccorso e rianimazione",
+      "La medicina preventiva",
+      "La sanità pubblica e l'epidemiologia",
+      "Le grandi epidemie della storia",
+      "La medicina legale",
+      "Etica medica: quando la scienza incontra la coscienza",
+      "La ricerca medica: come nasce una scoperta",
+      "La medicina del futuro: AI, genomica, nanomedicina",
+      "Essere medico: vocazione, responsabilità, umanità"
+    ]
+  }
+];
+
+// STORAGE
+function key(mi, li) { return `med_m${mi}_l${li}`; }
+
+function load(mi, li) {
+  try {
+    const r = localStorage.getItem(key(mi, li));
+    return r ? JSON.parse(r) : { content: '', notes: '', completed: false };
+  } catch(e) { return { content: '', notes: '', completed: false }; }
+}
+
+function save(mi, li, data) {
+  localStorage.setItem(key(mi, li), JSON.stringify(data));
+}
+
+function exportData() {
+  const out = {};
+  CURRICULUM.forEach((mod, mi) => {
+    out['modulo_' + mod.num] = { titolo: mod.title, lezioni: {} };
+    mod.lessons.forEach((les, li) => {
+      const d = load(mi, li);
+      if (d.content || d.notes || d.completed) {
+        out['modulo_' + mod.num].lezioni['lezione_' + (li + 1)] = { titolo: les, ...d };
+      }
+    });
+  });
+  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'medicina_diario.json';
+  a.click();
+}
+
+// PROGRESS
+function updateProgress() {
+  let done = 0;
+  CURRICULUM.forEach((mod, mi) => mod.lessons.forEach((_, li) => { if (load(mi, li).completed) done++; }));
+  document.getElementById('progressBar').style.width = (done) + '%';
+  document.getElementById('progressLabel').textContent = done + ' / 100';
+}
+
+// ESCAPE
+function esc(str) {
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// RENDER
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+
+  let globalNum = 0;
+
+  CURRICULUM.forEach(function(mod, mi) {
+    const done = mod.lessons.filter((_, li) => load(mi, li).completed).length;
+
+    const modEl = document.createElement('div');
+    modEl.className = 'module';
+
+    const header = document.createElement('div');
+    header.className = 'module-header';
+    header.innerHTML =
+      '<span class="module-num">MOD ' + String(mod.num).padStart(2, '0') + '</span>' +
+      '<div class="module-title-wrap">' +
+        '<span class="module-title">' + mod.title + '</span>' +
+        '<span class="module-subtitle">' + mod.subtitle + '</span>' +
+      '</div>' +
+      '<div class="module-meta">' +
+        '<span class="module-count">' + done + '/' + mod.lessons.length + '</span>' +
+        '<span class="module-chevron">&#9660;</span>' +
+      '</div>';
+    header.addEventListener('click', function() { modEl.classList.toggle('open'); });
+
+    const body = document.createElement('div');
+    body.className = 'module-body';
+
+    mod.lessons.forEach(function(les, li) {
+      globalNum++;
+      const d = load(mi, li);
+      const gn = globalNum;
+      const lesEl = document.createElement('div');
+      lesEl.className = 'lesson' + (d.completed ? ' completed' : '');
+      lesEl.id = 'les-' + mi + '-' + li;
+
+      const lh = document.createElement('div');
+      lh.className = 'lesson-header';
+      lh.innerHTML =
+        '<span class="lesson-num">' + String(gn).padStart(3, '0') + '</span>' +
+        '<span class="lesson-title">' + les + '</span>' +
+        '<span class="lesson-status">' + (d.completed ? '&#10003; completata' : '&nbsp;') + '</span>' +
+        '<span class="lesson-chevron">&#9660;</span>';
+      lh.addEventListener('click', function() { lesEl.classList.toggle('open'); });
+
+      const lb = document.createElement('div');
+      lb.className = 'lesson-body';
+      lb.innerHTML =
+        '<div class="field-gap">' +
+          '<label>Lezione</label>' +
+          '<textarea id="c-' + mi + '-' + li + '" placeholder="Incolla qui il testo della lezione...">' + esc(d.content) + '</textarea>' +
+
+```
+    '</div>' +
+    '<div class="field-gap">' +
+      '<label class="label-notes">Le mie considerazioni</label>' +
+      '<textarea class="notes-area" id="n-' + mi + '-' + li + '" placeholder="Appunti, riflessioni, domande da fare...">' + esc(d.notes) + '</textarea>' +
+    '</div>' +
+    '<div class="lesson-actions">' +
+      '<button class="btn-save" id="bs-' + mi + '-' + li + '">Salva</button>' +
+      '<button class="btn-done" id="bd-' + mi + '-' + li + '">' + (d.completed ? 'Segna come da fare' : 'Segna come completata') + '</button>' +
+      '<span class="save-feedback" id="fb-' + mi + '-' + li + '">Salvato</span>' +
+    '</div>';
+
+  lesEl.appendChild(lh);
+  lesEl.appendChild(lb);
+  body.appendChild(lesEl);
+
+  // events after appending (so elements exist in DOM)
+  lb.querySelector('#bs-' + mi + '-' + li).addEventListener('click', function() {
+    doSave(mi, li);
+  });
+  lb.querySelector('#bd-' + mi + '-' + li).addEventListener('click', function() {
+    doToggleDone(mi, li);
+  });
+});
+
+modEl.appendChild(header);
+modEl.appendChild(body);
+app.appendChild(modEl);
+```
+
+});
+
+updateProgress();
+}
+
+function doSave(mi, li) {
+const d = load(mi, li);
+d.content = document.getElementById(‘c-’ + mi + ‘-’ + li).value;
+d.notes   = document.getElementById(‘n-’ + mi + ‘-’ + li).value;
+save(mi, li, d);
+const fb = document.getElementById(‘fb-’ + mi + ‘-’ + li);
+fb.classList.add(‘show’);
+setTimeout(function() { fb.classList.remove(‘show’); }, 1800);
+}
+
+function doToggleDone(mi, li) {
+doSave(mi, li);
+const d = load(mi, li);
+d.completed = !d.completed;
+save(mi, li, d);
+// remember which module was open
+const openMods = [];
+document.querySelectorAll(’.module’).forEach(function(el, i) {
+if (el.classList.contains(‘open’)) openMods.push(i);
+});
+render();
+// reopen same modules
+document.querySelectorAll(’.module’).forEach(function(el, i) {
+if (openMods.includes(i)) el.classList.add(‘open’);
+});
+}
+
+render();
+</script>
+
+</body>
+</html>
