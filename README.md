@@ -1,2 +1,2 @@
 # Medicina
-Calculator Fair Odds
+Corso Universitario 
