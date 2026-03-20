@@ -485,18 +485,32 @@ const CURRICULUM = [
   }
 ];
 
-// STORAGE
-function key(mi, li) { return `med_m${mi}_l${li}`; }
+// STORAGE — fallback in memoria se localStorage non è disponibile (es. Kodex)
+const memStore = {};
+
+function lsAvailable() {
+  try { localStorage.setItem('__t__','1'); localStorage.removeItem('__t__'); return true; }
+  catch(e) { return false; }
+}
+const USE_LS = lsAvailable();
+
+function key(mi, li) { return 'med_m' + mi + '_l' + li; }
 
 function load(mi, li) {
   try {
-    const r = localStorage.getItem(key(mi, li));
-    return r ? JSON.parse(r) : { content: '', notes: '', completed: false };
+    const k = key(mi, li);
+    const raw = USE_LS ? localStorage.getItem(k) : (memStore[k] || null);
+    return raw ? JSON.parse(raw) : { content: '', notes: '', completed: false };
   } catch(e) { return { content: '', notes: '', completed: false }; }
 }
 
 function save(mi, li, data) {
-  localStorage.setItem(key(mi, li), JSON.stringify(data));
+  try {
+    const k = key(mi, li);
+    const v = JSON.stringify(data);
+    if (USE_LS) localStorage.setItem(k, v);
+    else memStore[k] = v;
+  } catch(e) {}
 }
 
 function exportData() {
